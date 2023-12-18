@@ -1,25 +1,22 @@
 import { useState } from 'react';
+import { Select, TextField, MenuItem } from '@mui/material'
 
 import './App.css';
 import feedstocks from './feedstocks';
 
 
 function Feedstock() {
-  const [selectedFeedstock, setSelectedFeedstock] = useState('bedded-diary');
+  const [selectedFeedstock] = useState('bedded-diary');
 
   return (
     <div className='feedstock'>
-      <select value={selectedFeedstock} onChange={e => setSelectedFeedstock(e.target.value)}>
+      <Select value={selectedFeedstock}>
         {feedstocks.map((feedstock, index) => (
-          <option key={index} value={feedstock.slug}>
-            {feedstock.label}
-          </option>
+          <MenuItem value={feedstock.slub}>{feedstock.label}</MenuItem>
         ))}
-      </select>
-      <div className='weight-field-container'>
-        <label for='weight'>Weight (lbs)</label>
-        <input name='weight' id='weight' />
-      </div>
+      </Select>
+
+      <TextField label="Weight" variant="outlined" />
     </div>
   )
 }
