@@ -7,30 +7,64 @@ import feedstocks from './feedstocks';
 
 function Feedstock() {
   const [selectedFeedstock, setSelectedFeedstock] = useState('');
+  const [weight, setWeight] = useState('');
 
-  const handleChange = (event) => {
+  const handleChangeFeedstock = (event) => {
     setSelectedFeedstock(event.target.value);
   };
 
+  const handleChangeWeight = (event) => {
+    setWeight(event.target.value);
+  }
+
+  const calculateTotalWeight = () => weight;
+
+  const calculateMoisture = () => {
+    if (selectedFeedstock) {
+      return feedstocks[selectedFeedstock].moisture * parseInt(weight) / parseInt(weight);
+    }
+  }
+
   return (
     <Box sx={{ p: 10 }}>
-      <FormControl>
-        <InputLabel id='feedstock-select-label-1'>Feedstock</InputLabel>
-        <Select
-          labelId='feedstock-select-label-1'
-          id='feedstock-select-1'
-          label='Feedstock'
-          value={selectedFeedstock}
-          onChange={handleChange}
-          sx={{ minWidth: 200 }}
-        >
-          {feedstocks.map((feedstock) => (
-            <MenuItem key={feedstock.slug} value={feedstock.slug}>{feedstock.label}</MenuItem>
-          ))}
-        </Select>
+      <Box>
+        <FormControl>
+          <InputLabel id='feedstock-select-label-1'>Feedstock</InputLabel>
+          <Select
+            labelId='feedstock-select-label-1'
+            id='feedstock-select-1'
+            label='Feedstock'
+            value={selectedFeedstock}
+            onChange={handleChangeFeedstock}
+            sx={{ minWidth: 200 }}
+          >
+            {Object.values(feedstocks).map((feedstock) => (
+              <MenuItem key={feedstock.slug} value={feedstock.slug}>{feedstock.label}</MenuItem>
+            ))}
+          </Select>
 
-        <TextField label="Weight" variant="outlined" />
-      </FormControl>
+          <TextField
+            label='Weight'
+            variant='outlined'
+            value={weight}
+            onChange={handleChangeWeight}
+          />
+        </FormControl>
+      </Box>
+
+      <Box>
+        <TextField
+          label='Total Weight'
+          value={calculateTotalWeight()}
+          inputProps={{readOnly: true,}}
+        />
+
+        <TextField
+          label='Moisture'
+          value={calculateMoisture()}
+          inputProps={{readOnly: true,}}
+        />
+      </Box>
     </Box>
   )
 }
