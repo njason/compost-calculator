@@ -6,8 +6,8 @@ import feedstocks from './feedstocks';
 
 
 function Feedstock() {
-  const [selectedFeedstock, setSelectedFeedstock] = useState('');
-  const [weight, setWeight] = useState('');
+  const [selectedFeedstock, setSelectedFeedstock] = useState(null);
+  const [weight, setWeight] = useState(null); 
 
   const handleChangeFeedstock = (event) => {
     setSelectedFeedstock(event.target.value);
@@ -17,12 +17,20 @@ function Feedstock() {
     setWeight(event.target.value);
   }
 
-  const calculateTotalWeight = () => weight;
+  const calculateTotalWeight = () => {
+    if (weight) {
+      return weight;
+    }
+    
+    return 'Total Weight';
+  }
 
   const calculateMoisture = () => {
-    if (selectedFeedstock) {
+    if (selectedFeedstock && weight) {
       return feedstocks[selectedFeedstock].moisture * parseInt(weight) / parseInt(weight);
     }
+
+    return 'Moisture';
   }
 
   return (
