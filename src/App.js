@@ -4,14 +4,22 @@ import { Select, TextField, MenuItem, InputLabel, Box, FormControl } from '@mui/
 import './App.css';
 import feedstocks from './feedstocks';
 
+/**
+ * @typedef {Object} Feedstock
+ * @property {string} weight
+ * @property {string} slug
+ */
 
-function Feedstock() {
+
+function FeedstockList() {
+  const [weight, setWeight] = useState(null);
   const [selectedFeedstock, setSelectedFeedstock] = useState(null);
-  const [weight, setWeight] = useState(null); 
 
   const handleChangeFeedstock = (event) => {
     setSelectedFeedstock(event.target.value);
   };
+
+  // <FeedstockItem handleFeedstock={(event) => handleFeedstock(event, index)} index={index} />
 
   const handleChangeWeight = (event) => {
     setWeight(event.target.value);
@@ -33,32 +41,17 @@ function Feedstock() {
     return 'Moisture';
   }
 
-  return (
-    <Box sx={{ p: 10 }}>
-      <Box>
-        <FormControl>
-          <InputLabel id='feedstock-select-label-1'>Feedstock</InputLabel>
-          <Select
-            labelId='feedstock-select-label-1'
-            id='feedstock-select-1'
-            label='Feedstock'
-            value={selectedFeedstock}
-            onChange={handleChangeFeedstock}
-            sx={{ minWidth: 200 }}
-          >
-            {Object.values(feedstocks).map((feedstock) => (
-              <MenuItem key={feedstock.slug} value={feedstock.slug}>{feedstock.label}</MenuItem>
-            ))}
-          </Select>
+  const feedstockProps = {
+    index: 1,
+    selectedFeedstock,
+    handleChangeFeedstock,
+    weight,
+    handleChangeWeight
+  };
 
-          <TextField
-            label='Weight'
-            variant='outlined'
-            value={weight}
-            onChange={handleChangeWeight}
-          />
-        </FormControl>
-      </Box>
+  return (
+    <Box>
+      <Feedstock {...feedstockProps} />
 
       <Box>
         <TextField
@@ -77,6 +70,37 @@ function Feedstock() {
   )
 }
 
+function Feedstock({index, selectedFeedstock, handleChangeFeedstock, weight, handleChangeWeight}) {
+  return (
+    <Box>
+      <Box>
+        <FormControl>
+          <InputLabel id={`feedstock-select-label-${index}`}>Feedstock</InputLabel>
+          <Select
+            labelId={`feedstock-select-label-${index}`}
+            id={`feedstock-select-${index}`}
+            label='Feedstock'
+            value={selectedFeedstock}
+            onChange={handleChangeFeedstock}
+            sx={{ minWidth: 200 }}
+          >
+            {Object.values(feedstocks).map((feedstock) => (
+              <MenuItem key={feedstock.slug} value={feedstock.slug}>{feedstock.label}</MenuItem>
+            ))}
+          </Select>
+
+          <TextField
+            label='Weight'
+            variant='outlined'
+            value={weight}
+            onChange={handleChangeWeight}
+          />
+        </FormControl>
+      </Box>
+    </Box>
+  )
+}
+
 function App() {
 
   return (
@@ -85,7 +109,7 @@ function App() {
         <h3>Compost Calculator</h3>
       </header>
       <div className='App-body'>
-        <Feedstock />
+        <FeedstockList />
       </div>
     </div>
   );
