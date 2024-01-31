@@ -5,14 +5,22 @@ import './App.css';
 import feedstocks from './feedstocks';
 
 /**
- * @typedef {Object} Feedstock
- * @property {string} weight
- * @property {string} slug
+ * @typedef {import('react').Dispatch<import('react').SetStateAction<null>>} ReactDispatch
+ * @typedef {function(Event): void} EventHandler
+ * 
+ * @typedef {Object} FeedstockProps
+ * @property {number} index
+ * @property {string|null} selectedFeedstock
+ * @property {EventHandler} handleChangeFeedstock
+ * @property {string|null} weight
+ * @property {EventHandler} handleChangeWeight
  */
 
-
-function FeedstockList() {
+function AppBody() {
+  /** @type {[string|null, ReactDispatch]} */
   const [weight, setWeight] = useState(null);
+
+  /** @type {[string|null, ReactDispatch]} */
   const [selectedFeedstock, setSelectedFeedstock] = useState(null);
 
   const handleChangeFeedstock = (event) => {
@@ -21,9 +29,12 @@ function FeedstockList() {
 
   // <FeedstockItem handleFeedstock={(event) => handleFeedstock(event, index)} index={index} />
 
+  /**
+   * @param {Event} event 
+   */
   const handleChangeWeight = (event) => {
     setWeight(event.target.value);
-  }
+  };
 
   const calculateTotalWeight = () => {
     if (weight) {
@@ -31,7 +42,7 @@ function FeedstockList() {
     }
     
     return 'Total Weight';
-  }
+  };
 
   const calculateMoisture = () => {
     if (selectedFeedstock && weight) {
@@ -39,14 +50,15 @@ function FeedstockList() {
     }
 
     return 'Moisture';
-  }
+  };
 
+  /** @type {FeedstockProps} */
   const feedstockProps = {
     index: 1,
     selectedFeedstock,
     handleChangeFeedstock,
     weight,
-    handleChangeWeight
+    handleChangeWeight,
   };
 
   return (
@@ -67,9 +79,12 @@ function FeedstockList() {
         />
       </Box>
     </Box>
-  )
+  );
 }
 
+/**
+ * @param {FeedstockProps} param0 
+ */
 function Feedstock({index, selectedFeedstock, handleChangeFeedstock, weight, handleChangeWeight}) {
   return (
     <Box>
@@ -98,7 +113,7 @@ function Feedstock({index, selectedFeedstock, handleChangeFeedstock, weight, han
         </FormControl>
       </Box>
     </Box>
-  )
+  );
 }
 
 function App() {
@@ -109,7 +124,7 @@ function App() {
         <h3>Compost Calculator</h3>
       </header>
       <div className='App-body'>
-        <FeedstockList />
+        <AppBody />
       </div>
     </div>
   );
