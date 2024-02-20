@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { Select, TextField, MenuItem, InputLabel, Box, FormControl } from '@mui/material'
+import { v4 as uuidv4 } from "uuid";
 
 import './App.css';
-import feedstocks from './feedstocks';
+import feedstocksDb from './feedstocks';
 
 /**
  * @typedef {import('react').Dispatch<import('react').SetStateAction<null>>} ReactDispatch
@@ -17,54 +18,67 @@ import feedstocks from './feedstocks';
  */
 
 function AppBody() {
-  /** @type {[string|null, ReactDispatch]} */
-  const [weight, setWeight] = useState(null);
-
-  /** @type {[string|null, ReactDispatch]} */
-  const [selectedFeedstock, setSelectedFeedstock] = useState(null);
-
-  const handleChangeFeedstock = (event) => {
-    setSelectedFeedstock(event.target.value);
-  };
-
-  // <FeedstockItem handleFeedstock={(event) => handleFeedstock(event, index)} index={index} />
-
-  /**
-   * @param {Event} event 
-   */
-  const handleChangeWeight = (event) => {
-    setWeight(event.target.value);
-  };
 
   const calculateTotalWeight = () => {
+    /*const validFeedstocks = selectedFeedstocks.filter(feedstock => feedstock.weight)
     if (weight) {
       return weight;
-    }
+    }*/
     
     return 'Total Weight';
   };
 
   const calculateMoisture = () => {
-    if (selectedFeedstock && weight) {
+    /*const validFeedstocks = selectedFeedstocks.filter((feedstock) => feedstock.selectedFeedstock && feedstock.weight);
+
+    const sum = validFeedstocks.reduce )
+    if (selectedFeedstocks && weight) {
       return feedstocks[selectedFeedstock].moisture * parseInt(weight) / parseInt(weight);
-    }
+    }*/
 
     return 'Moisture';
   };
 
-  /** @type {FeedstockProps} */
-  const feedstockProps = {
-    index: 1,
-    selectedFeedstock,
-    handleChangeFeedstock,
-    weight,
-    handleChangeWeight,
+  /** @type {Array<[string|null, ReactDispatch]>} */
+  const [feedstocks, setFeedstocks] = useState([
+    { id: uuidv4(), selectedFeedstock: null, weight: null }
+  ]);
+  
+  const create = newFeedstock => {
+    setFeedstocks([...feedstocks, newFeedstock]);
   };
+
+  const remove = id => {
+    setFeedstocks(feedstocks.filter(feedstock => feedstock.id !== id));
+  };
+
+  const update = (id, updatedSelectedFeedstock) => {
+    const updatedFeedstocks = feedstocks.map(feedstock => {
+      if (feedstock.id === id) {
+        return { ...feedstock, selectedFeedstock: updatedSelectedFeedstock };
+      }
+
+      return feedstock;
+    });
+
+    setFeedstocks(updatedFeedstocks);
+  };
+
+  const selectedFeedstockList = feedstocks.map(feedstock => (
+    <Feedstock
+      update={update}
+      remove={remove}
+      feedstock={feedstock}
+      key={feedstock.id}
+    />
+  ));
 
   return (
     <Box>
-      <Feedstock {...feedstockProps} />
-
+      <Box>
+        {selectedFeedstockList}
+      </Box>
+        
       <Box>
         <TextField
           label='Total Weight'
@@ -85,22 +99,29 @@ function AppBody() {
 /**
  * @param {FeedstockProps} param0 
  */
-function Feedstock({index, selectedFeedstock, handleChangeFeedstock, weight, handleChangeWeight}) {
+function Feedstock({ feedstock, remove, update }) {
+  const [selectedFeedstock, setSelectedFeedstock] = useState(feedstock.selectedFeedstock);
+  const [weight, setWeight] = useState(feedstock.weight);
+
+  const handleChangeFeedstock = (event) => {
+    setSelectedFeedstock(event.target.value);
+  };
+
   return (
     <Box>
       <Box>
         <FormControl>
-          <InputLabel id={`feedstock-select-label-${index}`}>Feedstock</InputLabel>
+          <InputLabel id={`feedstock-select-label-${feedstock.id}`}>Feedstock</InputLabel>
           <Select
-            labelId={`feedstock-select-label-${index}`}
-            id={`feedstock-select-${index}`}
+            labelId={`feedstock-select-label-${feedstock.id}`}
+            id={`feedstock-select-${feedstock.id}`}
             label='Feedstock'
             value={selectedFeedstock}
             onChange={handleChangeFeedstock}
             sx={{ minWidth: 200 }}
           >
-            {Object.values(feedstocks).map((feedstock) => (
-              <MenuItem key={feedstock.slug} value={feedstock.slug}>{feedstock.label}</MenuItem>
+            {Object.entries(feedstocksDb).map(([slug, feedstock]) => (
+              <MenuItem key={slug} value={slug}>{feedstock.label}</MenuItem>
             ))}
           </Select>
 
@@ -108,7 +129,7 @@ function Feedstock({index, selectedFeedstock, handleChangeFeedstock, weight, han
             label='Weight'
             variant='outlined'
             value={weight}
-            onChange={handleChangeWeight}
+            onChange={setWeight}
           />
         </FormControl>
       </Box>
@@ -117,7 +138,6 @@ function Feedstock({index, selectedFeedstock, handleChangeFeedstock, weight, han
 }
 
 function App() {
-
   return (
     <div className='App'>
       <header className='App-header'>
