@@ -1,5 +1,8 @@
 # Getting Started with Create React App
 
+
+Follow this examples: https://codesandbox.io/p/sandbox/react-todo-list-p912n?file=%2Fsrc%2FTodoList.js
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
